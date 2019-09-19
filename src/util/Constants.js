@@ -28,7 +28,7 @@ const browser = exports.browser = typeof window !== 'undefined';
  * corresponding websocket events
  * @property {number} [restTimeOffset=500] Extra time in millseconds to wait before continuing to make REST
  * requests (higher values will reduce rate-limiting errors on bad connections)
- * @property {number} [restRequestTimeout=15000] Time to wait before cancelling a REST request
+ * @property {number} [restRequestTimeout=15000] Time to wait before cancelling a REST request, in milliseconds
  * @property {number} [restSweepInterval=60] How frequently to delete inactive request buckets, in seconds
  * (or 0 for never)
  * @property {number} [retryLimit=1] How many times to retry on 5XX errors (Infinity for indefinite amount of retries)
@@ -264,11 +264,11 @@ exports.Events = {
   ERROR: 'error',
   WARN: 'warn',
   DEBUG: 'debug',
-  SHARD_DISCONNECTED: 'shardDisconnected',
+  SHARD_DISCONNECT: 'shardDisconnect',
   SHARD_ERROR: 'shardError',
   SHARD_RECONNECTING: 'shardReconnecting',
   SHARD_READY: 'shardReady',
-  SHARD_RESUMED: 'shardResumed',
+  SHARD_RESUME: 'shardResume',
   INVALIDATED: 'invalidated',
   RAW: 'raw',
 };
@@ -464,6 +464,23 @@ exports.Colors = {
   DARK_BUT_NOT_BLACK: 0x2C2F33,
   NOT_QUITE_BLACK: 0x23272A,
 };
+
+/**
+ * The value set for the verification levels for a guild:
+ * * None
+ * * Low
+ * * Medium
+ * * (╯°□°）╯︵ ┻━┻
+ * * ┻━┻ ﾐヽ(ಠ益ಠ)ノ彡┻━┻
+ * @typedef {string} VerificationLevel
+ */
+exports.VerificationLevels = [
+  'None',
+  'Low',
+  'Medium',
+  '(╯°□°）╯︵ ┻━┻',
+  '┻━┻ ﾐヽ(ಠ益ಠ)ノ彡┻━┻',
+];
 
 /**
  * An error encountered while performing an API request. Here are the potential errors:
