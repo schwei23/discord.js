@@ -25,7 +25,10 @@ declare module 'discord.js' {
 		constructor(presence: Presence, data?: object);
 		public applicationID: Snowflake | null;
 		public assets: RichPresenceAssets | null;
+		public readonly createdAt: Date;
+		public createdTimestamp: number;
 		public details: string | null;
+		public emoji: Emoji | null;
 		public name: string;
 		public party: {
 			id: string | null;
@@ -878,6 +881,7 @@ declare module 'discord.js' {
 		public setNickname(nickname: string, reason?: string): Promise<GuildMember>;
 		public toJSON(): object;
 		public toString(): string;
+		public valueOf(): string;
 	}
 
 	export class Integration extends Base {
@@ -1006,6 +1010,7 @@ declare module 'discord.js' {
 		public size: number;
 		public url: string;
 		public width: number | null;
+		public readonly spoiler: boolean;
 		public setFile(attachment: BufferResolvable | Stream, name?: string): this;
 		public setName(name: string): this;
 		public toJSON(): object;
@@ -1447,7 +1452,7 @@ declare module 'discord.js' {
 			route: object,
 			reason?: string
 		): Promise<{ id: Snowflake; position: number }[]>;
-		public static splitMessage(text: string, options?: SplitOptions): string[];
+		public static splitMessage(text: StringResolvable, options?: SplitOptions): string[];
 		public static str2ab(str: string): ArrayBuffer;
 	}
 
@@ -1911,7 +1916,8 @@ declare module 'discord.js' {
 	type ActivityType = 'PLAYING'
 		| 'STREAMING'
 		| 'LISTENING'
-		| 'WATCHING';
+		| 'WATCHING'
+		| 'CUSTOM_STATUS';
 
 	type MessageFlagsString = 'CROSSPOSTED'
 		| 'IS_CROSSPOST'
@@ -2187,6 +2193,9 @@ declare module 'discord.js' {
 		MEMBER_BAN_REMOVE?: number;
 		MEMBER_UPDATE?: number;
 		MEMBER_ROLE_UPDATE?: number;
+		MEMBER_MOVE?: number;
+		MEMBER_DISCONNECT?: number;
+		BOT_ADD?: number;
 		ROLE_CREATE?: number;
 		ROLE_UPDATE?: number;
 		ROLE_DELETE?: number;
@@ -2200,6 +2209,12 @@ declare module 'discord.js' {
 		EMOJI_UPDATE?: number;
 		EMOJI_DELETE?: number;
 		MESSAGE_DELETE?: number;
+		MESSAGE_BULK_DELETE?: number;
+		MESSAGE_PIN?: number;
+		MESSAGE_UNPIN?: number;
+		INTEGRATION_CREATE?: number;
+		INTEGRATION_UPDATE?: number;
+		INTEGRATION_DELETE?: number;
 	}
 
 	type GuildAuditLogsActionType = 'CREATE'
@@ -2211,7 +2226,7 @@ declare module 'discord.js' {
 		before?: Snowflake | GuildAuditLogsEntry;
 		limit?: number;
 		user?: UserResolvable;
-		type?: string | number;
+		type?: GuildAuditLogsAction | number;
 	}
 
 	type GuildAuditLogsTarget = keyof GuildAuditLogsTargets;
