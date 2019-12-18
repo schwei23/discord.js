@@ -39,23 +39,19 @@
     "abort-controller": "^3.0.0",
     "form-data": "^3.0.0",
     "node-fetch": "^2.6.0",
-    "pako": "^1.0.10",
     "prism-media": "^1.1.0",
     "setimmediate": "^1.0.5",
     "tweetnacl": "^1.0.1",
-    "ws": "^7.2.0"
+    "ws": "^7.2.1"
   },
   "peerDependencies": {
     "bufferutil": "^4.0.1",
-    "erlpack": "discordapp/erlpack",
+    "erlpack": "github:discordapp/erlpack",
     "libsodium-wrappers": "^0.7.6",
-    "zlib-sync": "^0.1.6",
-    "zucc": "^0.1.2"
+    "utf-8-validate": "^5.0.2",
+    "zlib-sync": "^0.1.6"
   },
   "peerDependenciesMeta": {
-    "@discordjs/uws": {
-      "optional": true
-    },
     "bufferutil": {
       "optional": true
     },
@@ -65,28 +61,22 @@
     "libsodium-wrappers": {
       "optional": true
     },
-    "sodium": {
-      "optional": true
-    },
     "zlib-sync": {
-      "optional": true
-    },
-    "zucc": {
       "optional": true
     }
   },
   "devDependencies": {
-    "@types/node": "^12.12.14",
+    "@types/node": "^12.12.21",
     "@types/ws": "^6.0.4",
     "discord.js-docgen": "discordjs/docgen",
     "eslint": "^6.7.2",
     "jest": "^24.9.0",
     "json-filter-loader": "^1.0.0",
-    "terser-webpack-plugin": "^2.2.2",
+    "terser-webpack-plugin": "^2.3.1",
     "tslint": "^5.20.1",
     "tslint-config-typings": "^0.3.1",
     "typescript": "^3.7.3",
-    "webpack": "^4.41.2",
+    "webpack": "^4.41.3",
     "webpack-cli": "^3.3.10"
   },
   "engines": {
@@ -95,8 +85,6 @@
   "browser": {
     "https": false,
     "ws": false,
-    "uws": false,
-    "@discordjs/uws": false,
     "erlpack": false,
     "prism-media": false,
     "opusscript": false,
@@ -105,7 +93,6 @@
     "sodium": false,
     "worker_threads": false,
     "zlib-sync": false,
-    "zucc": false,
     "src/sharding/Shard.js": false,
     "src/sharding/ShardClientUtil.js": false,
     "src/sharding/ShardingManager.js": false,
