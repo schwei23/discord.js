@@ -714,6 +714,7 @@ declare module 'discord.js' {
 		public shardID: number;
 		public splash: string | null;
 		public readonly systemChannel: TextChannel | null;
+		public systemChannelFlags: Readonly<SystemChannelFlags>;
 		public systemChannelID: Snowflake | null;
 		public vanityURLCode: string | null;
 		public verificationLevel: number;
@@ -755,6 +756,7 @@ declare module 'discord.js' {
 		public setRolePositions(rolePositions: RolePosition[]): Promise<Guild>;
 		public setSplash(splash: Base64Resolvable | null, reason?: string): Promise<Guild>;
 		public setSystemChannel(systemChannel: ChannelResolvable | null, reason?: string): Promise<Guild>;
+		public setSystemChannelFlags(systemChannelFlags: SystemChannelFlagsResolvable, reason?: string): Promise<Guild>;
 		public setVerificationLevel(verificationLevel: number, reason?: string): Promise<Guild>;
 		public splashURL(options?: AvatarOptions): string | null;
 		public toJSON(): object;
@@ -1368,12 +1370,17 @@ declare module 'discord.js' {
 		static extend<T extends Function>(structure: string, extender: (baseClass: typeof Function) => T): T;
 	}
 
+	export class SystemChannelFlags extends BitField<SystemChannelFlagsString> {
+		public static FLAGS: Record<SystemChannelFlagsString, number>;
+		public static resolve(bit?: BitFieldResolvable<SystemChannelFlagsString>): number;
+	}
+
 	export class TextChannel extends TextBasedChannel(GuildChannel) {
 		constructor(guild: Guild, data?: object);
 		public messages: MessageStore;
 		public nsfw: boolean;
 		public rateLimitPerUser: number;
-		public topic: string;
+		public topic: string | null;
 		public createWebhook(name: string, options?: { avatar?: BufferResolvable | Base64Resolvable, reason?: string }): Promise<Webhook>;
 		public setNSFW(nsfw: boolean, reason?: string): Promise<TextChannel>;
 		public setRateLimitPerUser(rateLimitPerUser: number, reason?: string): Promise<TextChannel>;
@@ -1384,7 +1391,7 @@ declare module 'discord.js' {
 		constructor(guild: Guild, data?: object);
 		public messages: MessageStore;
 		public nsfw: boolean;
-		public topic: string;
+		public topic: string | null;
 		public createWebhook(name: string, options?: { avatar?: BufferResolvable | Base64Resolvable, reason?: string }): Promise<Webhook>;
 		public setNSFW(nsfw: boolean, reason?: string): Promise<NewsChannel>;
 		public fetchWebhooks(): Promise<Collection<Snowflake, Webhook>>;
@@ -2148,6 +2155,8 @@ declare module 'discord.js' {
 		TextChannel: typeof TextChannel;
 		VoiceChannel: typeof VoiceChannel;
 		CategoryChannel: typeof CategoryChannel;
+		NewsChannel: typeof NewsChannel;
+		StoreChannel: typeof StoreChannel;
 		GuildMember: typeof GuildMember;
 		Guild: typeof Guild;
 		Message: typeof Message;
@@ -2283,6 +2292,7 @@ declare module 'discord.js' {
 		defaultMessageNotifications?: DefaultMessageNotifications | number;
 		afkChannel?: ChannelResolvable;
 		systemChannel?: ChannelResolvable;
+		systemChannelFlags?: SystemChannelFlags;
 		afkTimeout?: number;
 		icon?: Base64Resolvable;
 		owner?: GuildMemberResolvable;
@@ -2318,7 +2328,7 @@ declare module 'discord.js' {
 
 	type GuildMemberResolvable = GuildMember | UserResolvable;
 
-	type GuildResolvable = Guild | Snowflake;
+	type GuildResolvable = Guild | GuildChannel | GuildMember | Role | Snowflake;
 
 	interface GuildPruneMembersOptions {
 		count?: boolean;
@@ -2610,6 +2620,11 @@ declare module 'discord.js' {
 	type StreamType = 'unknown' | 'converted' | 'opus' | 'ogg/opus' | 'webm/opus';
 
 	type StringResolvable = string | string[] | any;
+
+	type SystemChannelFlagsString = 'WELCOME_MESSAGE_DISABLED'
+		| 'BOOST_MESSAGE_DISABLED';
+
+	type SystemChannelFlagsResolvable = BitFieldResolvable<SystemChannelFlagsString>;
 
 	type TargetUser = number;
 
