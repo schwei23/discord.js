@@ -1,10 +1,10 @@
 'use strict';
 
-const TextBasedChannel = require('./interfaces/TextBasedChannel');
-const { Presence } = require('./Presence');
-const Snowflake = require('../util/Snowflake');
 const Base = require('./Base');
+const { Presence } = require('./Presence');
+const TextBasedChannel = require('./interfaces/TextBasedChannel');
 const { Error } = require('../errors');
+const Snowflake = require('../util/Snowflake');
 
 /**
  * Represents a user on Discord.
@@ -119,8 +119,8 @@ class User extends Base {
    * @readonly
    */
   get lastMessage() {
-    const channel = this.client.channels.get(this.lastMessageChannelID);
-    return (channel && channel.messages.get(this.lastMessageID)) || null;
+    const channel = this.client.channels.cache.get(this.lastMessageChannelID);
+    return (channel && channel.messages.cache.get(this.lastMessageID)) || null;
   }
 
   /**
@@ -129,8 +129,8 @@ class User extends Base {
    * @readonly
    */
   get presence() {
-    for (const guild of this.client.guilds.values()) {
-      if (guild.presences.has(this.id)) return guild.presences.get(this.id);
+    for (const guild of this.client.guilds.cache.values()) {
+      if (guild.presences.cache.has(this.id)) return guild.presences.cache.get(this.id);
     }
     return new Presence(this.client, { user: { id: this.id } });
   }
@@ -140,9 +140,9 @@ class User extends Base {
    * @param {ImageURLOptions} [options={}] Options for the Image URL
    * @returns {?string}
    */
-  avatarURL({ format, size } = {}) {
+  avatarURL({ format, size, dynamic } = {}) {
     if (!this.avatar) return null;
-    return this.client.rest.cdn.Avatar(this.id, this.avatar, format, size);
+    return this.client.rest.cdn.Avatar(this.id, this.avatar, format, size, dynamic);
   }
 
   /**
@@ -209,7 +209,7 @@ class User extends Base {
    * @readonly
    */
   get dmChannel() {
-    return this.client.channels.find(c => c.type === 'dm' && c.recipient.id === this.id) || null;
+    return this.client.channels.cache.find(c => c.type === 'dm' && c.recipient.id === this.id) || null;
   }
 
   /**
@@ -219,9 +219,11 @@ class User extends Base {
   async createDM() {
     const { dmChannel } = this;
     if (dmChannel && !dmChannel.partial) return dmChannel;
-    const data = await this.client.api.users(this.client.user.id).channels.post({ data: {
-      recipient_id: this.id,
-    } });
+    const data = await this.client.api.users(this.client.user.id).channels.post({
+      data: {
+        recipient_id: this.id,
+      },
+    });
     return this.client.actions.ChannelCreate.handle(data).channel;
   }
 
@@ -243,7 +245,8 @@ class User extends Base {
    * @returns {boolean}
    */
   equals(user) {
-    let equal = user &&
+    let equal =
+      user &&
       this.id === user.id &&
       this.username === user.username &&
       this.discriminator === user.discriminator &&
@@ -272,13 +275,16 @@ class User extends Base {
   }
 
   toJSON(...props) {
-    const json = super.toJSON({
-      createdTimestamp: true,
-      defaultAvatarURL: true,
-      tag: true,
-      lastMessage: false,
-      lastMessageID: false,
-    }, ...props);
+    const json = super.toJSON(
+      {
+        createdTimestamp: true,
+        defaultAvatarURL: true,
+        tag: true,
+        lastMessage: false,
+        lastMessageID: false,
+      },
+      ...props,
+    );
     json.avatarURL = this.avatarURL();
     json.displayAvatarURL = this.displayAvatarURL();
     return json;
