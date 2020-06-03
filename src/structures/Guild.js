@@ -2,6 +2,7 @@
 
 const Base = require('./Base');
 const GuildAuditLogs = require('./GuildAuditLogs');
+const GuildPreview = require('./GuildPreview');
 const Integration = require('./Integration');
 const Invite = require('./Invite');
 const VoiceRegion = require('./VoiceRegion');
@@ -159,12 +160,14 @@ class Guild extends Base {
      * * DISCOVERABLE
      * * FEATURABLE
      * * INVITE_SPLASH
-     * * PUBLIC
      * * NEWS
      * * PARTNERED
+     * * PUBLIC
+     * * PUBLIC_DISABLED
      * * VANITY_URL
      * * VERIFIED
      * * VIP_REGIONS
+     * * WELCOME_SCREEN_ENABLED
      * @typedef {string} Features
      */
 
@@ -300,7 +303,27 @@ class Guild extends Base {
      * @type {?number}
      * @name Guild#maximumPresences
      */
-    if (typeof data.max_presences !== 'undefined') this.maximumPresences = data.max_presences || 5000;
+    if (typeof data.max_presences !== 'undefined') this.maximumPresences = data.max_presences || 25000;
+
+    /**
+     * The approximate amount of members the guild has
+     * <info>You will need to fetch the guild using {@link Guild#fetch} if you want to receive this parameter</info>
+     * @type {?number}
+     * @name Guild#approximateMemberCount
+     */
+    if (typeof data.approximate_member_count !== 'undefined') {
+      this.approximateMemberCount = data.approximate_member_count;
+    }
+
+    /**
+     * The approximate amount of presences the guild has
+     * <info>You will need to fetch the guild using {@link Guild#fetch} if you want to receive this parameter</info>
+     * @type {?number}
+     * @name Guild#approximatePresenceCount
+     */
+    if (typeof data.approximate_presence_count !== 'undefined') {
+      this.approximatePresenceCount = data.approximate_presence_count;
+    }
 
     /**
      * The vanity URL code of the guild, if any
@@ -462,7 +485,10 @@ class Guild extends Base {
    * @readonly
    */
   get nameAcronym() {
-    return this.name.replace(/\w+/g, name => name[0]).replace(/\s/g, '');
+    return this.name
+      .replace(/'s /g, ' ')
+      .replace(/\w+/g, e => e[0])
+      .replace(/\s/g, '');
   }
 
   /**
@@ -587,7 +613,7 @@ class Guild extends Base {
   fetch() {
     return this.client.api
       .guilds(this.id)
-      .get()
+      .get({ query: { with_counts: true } })
       .then(data => {
         this._patch(data);
         return this;
@@ -707,6 +733,17 @@ class Guild extends Base {
         }
         return invites;
       });
+  }
+
+  /**
+   * Obtains a guild preview for this guild from Discord, only available for public guilds.
+   * @returns {Promise<GuildPreview>}
+   */
+  fetchPreview() {
+    return this.client.api
+      .guilds(this.id)
+      .preview.get()
+      .then(data => new GuildPreview(this.client, data));
   }
 
   /**
@@ -1321,7 +1358,13 @@ class Guild extends Base {
   _sortedChannels(channel) {
     const category = channel.type === ChannelTypes.CATEGORY;
     return Util.discordSort(
-      this.channels.cache.filter(c => c.type === channel.type && (category || c.parent === channel.parent)),
+      this.channels.cache.filter(
+        c =>
+          (['text', 'news', 'store'].includes(channel.type)
+            ? ['text', 'news', 'store'].includes(c.type)
+            : c.type === channel.type) &&
+          (category || c.parent === channel.parent),
+      ),
     );
   }
 }
