@@ -59,13 +59,11 @@ class TextBasedChannel {
    * @property {MessageEmbed|Object} [embed] An embed for the message
    * (see [here](https://discord.com/developers/docs/resources/channel#embed-object) for more details)
    * @property {MessageMentionOptions} [allowedMentions] Which mentions should be parsed from the message content
-   * @property {DisableMentionType} [disableMentions=this.client.options.disableMentions] Whether or not all mentions or
-   * everyone/here mentions should be sanitized to prevent unexpected mentions
    * @property {FileOptions[]|BufferResolvable[]} [files] Files to send with the message
    * @property {string|boolean} [code] Language for optional codeblock formatting to apply
    * @property {boolean|SplitOptions} [split=false] Whether or not the message should be split into multiple messages if
    * it exceeds the character limit. If an object is provided, these are the options for splitting the message
-   * @property {MessageResolvable} [replyTo] The message to reply to (must be in the same channel)
+   * @property {MessageResolvable} [replyTo] The message to reply to (must be in the same channel and not system)
    */
 
   /**
@@ -83,14 +81,6 @@ class TextBasedChannel {
    * - `users`
    * - `everyone`
    * @typedef {string} MessageMentionTypes
-   */
-
-  /**
-   * The type of mentions to disable.
-   * - `none`
-   * - `all`
-   * - `everyone`
-   * @typedef {string} DisableMentionType
    */
 
   /**

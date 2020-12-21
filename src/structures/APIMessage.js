@@ -3,7 +3,6 @@
 const MessageAttachment = require('./MessageAttachment');
 const MessageEmbed = require('./MessageEmbed');
 const { RangeError } = require('../errors');
-const { browser } = require('../util/Constants');
 const DataResolver = require('../util/DataResolver');
 const MessageFlags = require('../util/MessageFlags');
 const Util = require('../util/Util');
@@ -87,22 +86,6 @@ class APIMessage {
     }
 
     if (typeof content !== 'string') return content;
-
-    const disableMentions =
-      typeof this.options.disableMentions === 'undefined'
-        ? this.target.client.options.disableMentions
-        : this.options.disableMentions;
-    if (disableMentions === 'all') {
-      content = Util.removeMentions(content);
-    } else if (disableMentions === 'everyone') {
-      content = content.replace(/@([^<>@ ]*)/gmsu, (match, target) => {
-        if (target.match(/^[&!]?\d+$/)) {
-          return `@${target}`;
-        } else {
-          return `@\u200b${target}`;
-        }
-      });
-    }
 
     const isSplit = typeof this.options.split !== 'undefined' && this.options.split !== false;
     const isCode = typeof this.options.code !== 'undefined' && this.options.code !== false;
@@ -288,9 +271,7 @@ class APIMessage {
     };
 
     const ownAttachment =
-      typeof fileLike === 'string' ||
-      fileLike instanceof (browser ? ArrayBuffer : Buffer) ||
-      typeof fileLike.pipe === 'function';
+      typeof fileLike === 'string' || fileLike instanceof Buffer || typeof fileLike.pipe === 'function';
     if (ownAttachment) {
       attachment = fileLike;
       name = findName(attachment);
