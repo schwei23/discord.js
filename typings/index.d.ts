@@ -208,7 +208,7 @@ declare module 'discord.js' {
     public readonly uptime: number | null;
     public user: ClientUser | null;
     public users: UserManager;
-    public voice: ClientVoiceManager | null;
+    public voice: ClientVoiceManager;
     public ws: WebSocketManager;
     public destroy(): void;
     public fetchApplication(): Promise<ClientApplication>;
@@ -803,6 +803,7 @@ declare module 'discord.js' {
     public readonly displayName: string;
     public guild: Guild;
     public readonly id: Snowflake;
+    public pending: boolean;
     public readonly joinedAt: Date | null;
     public joinedTimestamp: number | null;
     public readonly kickable: boolean;
@@ -951,7 +952,6 @@ declare module 'discord.js' {
 
   export class Message extends Base {
     constructor(client: Client, data: object, channel: TextChannel | DMChannel | NewsChannel);
-    private _edits: Message[];
     private patch(data: object): Message;
 
     public activity: MessageActivity | null;
@@ -968,7 +968,6 @@ declare module 'discord.js' {
     public readonly editable: boolean;
     public readonly editedAt: Date | null;
     public editedTimestamp: number | null;
-    public readonly edits: Message[];
     public embeds: MessageEmbed[];
     public readonly guild: Guild | null;
     public id: Snowflake;
@@ -2021,7 +2020,7 @@ declare module 'discord.js' {
     public guild: Guild;
     public readonly premiumSubscriberRole: Role | null;
     public botRoleFor(user: UserResolvable): Role | null;
-    public create(options?: { data?: RoleData; reason?: string }): Promise<Role>;
+    public create(options?: RoleData & { reason?: string }): Promise<Role>;
     public fetch(id: Snowflake, cache?: boolean, force?: boolean): Promise<Role | null>;
     public fetch(id?: Snowflake, cache?: boolean, force?: boolean): Promise<Collection<Snowflake, Role>>;
   }
@@ -2332,7 +2331,6 @@ declare module 'discord.js' {
     messageCacheMaxSize?: number;
     messageCacheLifetime?: number;
     messageSweepInterval?: number;
-    messageEditHistoryMaxSize?: number;
     fetchAllMembers?: boolean;
     allowedMentions?: MessageMentionOptions;
     partials?: PartialTypes[];
@@ -3042,7 +3040,6 @@ declare module 'discord.js' {
       | 'pinnable'
       | 'url'
       | 'flags'
-      | 'edits'
       | 'embeds'
     > {
     attachments: Message['attachments'];
@@ -3050,7 +3047,6 @@ declare module 'discord.js' {
     readonly deletable: boolean;
     readonly crosspostable: boolean;
     readonly editable: boolean;
-    readonly edits: Message['edits'];
     embeds: Message['embeds'];
     flags: Message['flags'];
     mentions: Message['mentions'];
